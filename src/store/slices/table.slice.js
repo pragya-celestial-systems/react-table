@@ -4,12 +4,18 @@ const tableSlice = createSlice({
   name: "table-slice",
   initialState: [],
   reducers: {
-    removeData: (state, action) => {},
     setTableData: (state, action) => {
       return action.payload;
+    },
+    deleteRow: (state, action) => {
+      const { rows } = action.payload;
+      const updatedArray = state.filter(
+        (data) => !rows.includes(data.unique_key)
+      );
+      return updatedArray;
     },
   },
 });
 
-export const { removeData, setTableData } = tableSlice.actions;
+export const { setTableData, deleteRow } = tableSlice.actions;
 export default tableSlice.reducer;

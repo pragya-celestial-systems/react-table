@@ -11,13 +11,13 @@ import TableHead from "@mui/material/TableHead";
 import Paper from "@mui/material/Paper";
 import DeleteButton from "./DeleteButton";
 import { useRowContext } from "../context/RowContext";
-import { useDispatch, useSelector } from "react-redux";
-import { setTableData } from "../store/slices/table.slice";
+import { useDispatch } from "react-redux";
+import { deleteRow, setTableData } from "../store/slices/table.slice";
 import { v4 as uuidv4 } from "uuid";
 
 export default function BasicTable() {
   const dispatch = useDispatch();
-  const tableData = useSelector((state) => state.tableData);
+  const { tableData } = useTableData();
   const { filteredData, setFilteredData } = useTableData();
   const { currentPage, rows } = usePagination();
   const { rowsToBeDeleted, setRowsToBeDeleted } = useRowContext();
@@ -47,11 +47,7 @@ export default function BasicTable() {
   }, [currentPage, rows, tableData]);
 
   function handleDeleteRow() {
-    const updatedArray = tableData.filter(
-      (data) => !rowsToBeDeleted.includes(data.unique_key)
-    );
-
-    dispatch(setTableData(updatedArray));
+    dispatch(deleteRow({ rows: rowsToBeDeleted }));
     setRowsToBeDeleted([]);
   }
 

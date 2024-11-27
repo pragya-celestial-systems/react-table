@@ -3,7 +3,7 @@ import { TableDataProvider } from "./context/tableData";
 import { PaginationProvider } from "./context/PaginationContext";
 import { RowProvider } from "./context/RowContext";
 import BasicTable from "./components/Table";
-import Form from "./components/Form";
+import FilterForm from "./components/FilterForm";
 import { Provider } from "react-redux";
 import store from "./store/store";
 
@@ -13,7 +13,7 @@ function App() {
       <TableDataProvider>
         <PaginationProvider>
           <RowProvider>
-            <Form />
+            <FilterForm />
             <BasicTable />
             <TablePaginationDemo />
           </RowProvider>
