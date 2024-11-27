@@ -11,24 +11,26 @@ function THeading({ index, heading, columnKey }) {
 
   function handleSortColumn(e) {
     setSort((prevState) => (prevState + 1) % 3);
-    const sortKey = Number(e.target.dataset.sort);
+    const sortKey = Number(e.currentTarget.dataset.sort);
     const sortType = sortTypes[sortKey];
+
     const sortedData = [...filteredData];
-    const columnData = filteredData.map((data) => data[columnKey]);
-    let updatedData = [...filteredData];
 
     if (sortType === "default") {
-      setFilteredData(filteredData);
+      setFilteredData([...filteredData]);
     } else if (sortType === "ascending") {
-      columnData.sort();
-      updatedData.forEach((data, index) => {
-        data[columnKey] = columnData[index];
+      sortedData.sort((a, b) => {
+        if (typeof a[columnKey] === "string") {
+          return a[columnKey].localeCompare(b[columnKey]);
+        }
+        if (typeof a[columnKey] === "number") {
+          return a[columnKey] - b[columnKey];
+        }
+        return 0;
       });
-
-      console.log(updatedData);
-      setFilteredData(updatedData);
+      setFilteredData(sortedData);
     } else if (sortType === "descending") {
-      const compare = (a, b) => {
+      sortedData.sort((a, b) => {
         if (typeof a[columnKey] === "string") {
           return b[columnKey].localeCompare(a[columnKey]);
         }
@@ -36,22 +38,29 @@ function THeading({ index, heading, columnKey }) {
           return b[columnKey] - a[columnKey];
         }
         return 0;
-      };
-      setFilteredData(sortedData.sort(compare));
+      });
+      setFilteredData(sortedData);
     }
   }
 
   return (
-    <TableCell key={index}>
-      <Box
-        sx={{ display: "flex", cursor: "pointer" }}
-        data-sort={sort}
-        onClick={handleSortColumn}
-      >
-        <SwapVertIcon sx={{ color: "grey" }} />
-        {heading}
-      </Box>
-    </TableCell>
+    heading !== "unique_key" && (
+      <TableCell key={index}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+            color: "grey",
+          }}
+          data-sort={sort}
+          onClick={handleSortColumn}
+        >
+          <SwapVertIcon sx={{ marginRight: 1 }} />
+          {heading}
+        </Box>
+      </TableCell>
+    )
   );
 }
 

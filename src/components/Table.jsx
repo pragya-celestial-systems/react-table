@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import users from "../database/users.data";
 import TableHeadings from "./TableHeadings";
 import Row from "./Row";
 import { useTableData } from "../context/tableData";
@@ -11,32 +10,16 @@ import TableHead from "@mui/material/TableHead";
 import Paper from "@mui/material/Paper";
 import DeleteButton from "./DeleteButton";
 import { useRowContext } from "../context/RowContext";
-import { useDispatch, useSelector } from "react-redux";
-import { setTableData } from "../store/slices/table.slice";
-import { v4 as uuidv4 } from "uuid";
+import { useDispatch } from "react-redux";
+import { deleteRow } from "../store/slices/table.slice";
 
 export default function BasicTable() {
   const dispatch = useDispatch();
-  const tableData = useSelector((state) => state.tableData);
+  const { tableData } = useTableData();
   const { filteredData, setFilteredData } = useTableData();
   const { currentPage, rows } = usePagination();
   const { rowsToBeDeleted, setRowsToBeDeleted } = useRowContext();
   const tableRef = useRef();
-
-  useEffect(() => {
-    if (users) {
-      dispatch(setTableData(users));
-    }
-  }, [users]);
-
-  useEffect(() => {
-    const data = JSON.parse(JSON.stringify(users));
-    data?.forEach((data) => {
-      data.unique_key = uuidv4();
-    });
-
-    dispatch(setTableData(data));
-  }, []);
 
   useEffect(() => {
     if (tableData) {
@@ -47,11 +30,13 @@ export default function BasicTable() {
   }, [currentPage, rows, tableData]);
 
   function handleDeleteRow() {
-    const updatedArray = tableData.filter(
-      (data) => !rowsToBeDeleted.includes(data.unique_key)
+    const confirm = window.confirm(
+      "Are you sure you want to delete the selected rows?"
     );
 
-    dispatch(setTableData(updatedArray));
+    if (!confirm) return;
+
+    dispatch(deleteRow({ rows: rowsToBeDeleted }));
     setRowsToBeDeleted([]);
   }
 
